@@ -1,213 +1,173 @@
 
-/* 
-Name: Wagonda Francis Precious
-Access Number: B33245
-Registration Number: M25B13/038
 
-Problem:
-Many restaurants still take orders manually, which is slow and error-prone. 
-This program simulates a restaurant menu system where a customer can choose items, 
-quantities, and get a final bill.
+// PROBLEM STATEMENT:
+// Many restaurants still use manual methods for taking customer orders and processing payments.
+// This leads to errors, slow service, and difficulty tracking sales.
+// This program automates the food ordering process and payment handling.
 
-REQUIREMENT JUSTIFICATION
-The following programming constructs were used:
-1. CONDITIONS:
-    Used to check if the selected item exists on the menu.
-    If not valid , customer is asked again (simulated retry).
-    Ensures the program handles errors properly.
-
-2. LOOPS:
-   "for...in" loop ,to display the menu.
-    "for...of" loop, to calculate totals.
-    "while" loop, to retry until the customer makes a valid choice.
-    Loops ensure continuous flow without repeating code manually.
-
-3. FUNCTIONS:
-    displayMenu(),Shows the available items.
-    addOrder(choice, quantity) → Adds an item if valid.
-    calculateTotal(), Adds up all subtotals.
-   printReceipt(),Prints the receipt with totals.
-    Functions keep the program modular and clear.
-*/
-
-//  created a database menu with items and prices in UGX)
+// Restaurant Menu Data Structure
 const menu = {
-    breakfast: {
-        1: { name: "Rolex", price: 5000 },
-        2: { name: "Pancakes", price: 8000 },
-        3: { name: "English Breakfast", price: 15000 },
-        4: { name: "Fruit Salad", price: 7000 },
-        5: { name: "Coffee", price: 3000 }
-    },
-    lunch: {
-        1: { name: "Chicken & Chips", price: 15000 },
-        2: { name: "Fish Fillet", price: 18000 },
-        3: { name: "Vegetable Rice", price: 12000 },
-        4: { name: "Beef Burger", price: 16000 },
-        5: { name: "Caesar Salad", price: 10000 }
-    },
-    dinner: {
-        1: { name: "Grilled Tilapia", price: 25000 },
-        2: { name: "Pizza", price: 30000 },
-        3: { name: "Steak & Chips", price: 28000 },
-        4: { name: "Pasta Alfredo", price: 20000 },
-        5: { name: "Vegetable Curry", price: 18000 }
-    }
+    breakfast: [
+        { id: 1, name: "Pancakes with Syrup", price: 8000 },
+        { id: 2, name: "Omelette and Toast", price: 10000 },
+        { id: 3, name: "Continental Breakfast", price: 15000 },
+        { id: 4, name: "Porridge", price: 5000 }
+    ],
+    lunch: [
+        { id: 5, name: "Chicken Burger with Fries", price: 18000 },
+        { id: 6, name: "Grilled Fish and Rice", price: 22000 },
+        { id: 7, name: "Vegetable Stir Fry", price: 12000 },
+        { id: 8, name: "Beef Stew with Posho", price: 15000 }
+    ],
+    dinner: [
+        { id: 9, name: "Steak with Mashed Potatoes", price: 35000 },
+        { id: 10, name: "Pasta Carbonara", price: 20000 },
+        { id: 11, name: "Roasted Chicken with Vegetables", price: 28000 },
+        { id: 12, name: "Seafood Platter", price: 45000 }
+    ]
 };
 
-// created an empty array to hold orders these will be appended as the customer makes their choices
-let orders = [];
+// Customer order storage
+let customerOrders = [];
 
-// Function to display the main menu categories
-function displayMainMenu() {
-    console.log("\n--- UCU Restaurant Main Menu ---");
-    console.log("1. Breakfast Menu");
-    console.log("2. Lunch Menu");
-    console.log("3. Dinner Menu");
-    console.log("4. Exit");
-}
-
-// Function to display specific menu items
-function displayMenu(menuType) {
-    console.log(`\n--- ${menuType.charAt(0).toUpperCase() + menuType.slice(1)} Menu ---`);
-    for (let key in menu[menuType]) {
-        console.log(`${key}. ${menu[menuType][key].name} - ${menu[menuType][key].price} UGX`);
+// FUNCTION: Display menu by meal time
+// Why: Makes it easy for customers to see available meals for each time of day
+function displayMenu(mealTime) {
+    console.log(`\n${mealTime.toUpperCase()} MENU`);
+    console.log("=".repeat(50));
+    
+    // Loop through menu items for the specified meal time
+    // Why for loop: We need to display all items in the menu category
+    for (let i = 0; i < menu[mealTime].length; i++) {
+        const item = menu[mealTime][i];
+        console.log(`${item.id}. ${item.name} - UGX ${item.price.toLocaleString()}`);
     }
+    console.log("=".repeat(50));
 }
 
-// Function to add an order (returns true if valid, false if invalid)
-function addOrder(menuType, choice, quantity) {
-    if (menu[menuType][choice]) {
-        orders.push({
-            item: menu[menuType][choice].name,
-            price: menu[menuType][choice].price,
-            quantity: quantity,
-            subtotal: menu[menuType][choice].price * quantity
-        });
-        console.log(`Added: ${quantity} x ${menu[menuType][choice].name}`);
-        return true;
-    } else {
-        console.log("Invalid choice. Please select again.");
+// FUNCTION: Display all menus
+// Why: Gives customers a complete view of all available options
+function displayAllMenus() {
+    console.log("\n*** WELCOME TO WAGONDA'S RESTAURANT ***\n");
+    displayMenu("breakfast");
+    displayMenu("lunch");
+    displayMenu("dinner");
+}
+
+// FUNCTION: Find menu item by ID
+// Why: Allows easy lookup of items when customer places an order
+function findMenuItem(itemId) {
+    // Search through all meal times to find the item
+    // Why for...in loop: Efficient way to iterate through object properties
+    for (let mealTime in menu) {
+        // Why for loop: Check each item in the meal category
+        for (let i = 0; i < menu[mealTime].length; i++) {
+            if (menu[mealTime][i].id === itemId) {
+                return menu[mealTime][i];
+            }
+        }
+    }
+    return null; // Item not found
+}
+
+// FUNCTION: Add item to order
+// Why: Core function for building customer orders
+function addToOrder(itemId, quantity) {
+    const menuItem = findMenuItem(itemId);
+    
+    // Condition: Check if item exists in menu
+    // Why if/else: Validate input before processing order
+    if (menuItem === null) {
+        console.log("\nERROR: Item not found in menu. Please check the item ID.");
         return false;
     }
+    
+    // Condition: Validate quantity
+    // Why if/else: Ensure quantity is positive
+    if (quantity <= 0) {
+        console.log("\nERROR: Quantity must be greater than zero.");
+        return false;
+    }
+    
+    // Add item to order
+    const orderItem = {
+        name: menuItem.name,
+        price: menuItem.price,
+        quantity: quantity,
+        subtotal: menuItem.price * quantity
+    };
+    
+    customerOrders.push(orderItem);
+    console.log(`\n✓ Added ${quantity}x ${menuItem.name} to your order`);
+    return true;
 }
 
-// Function to calculate total
+// FUNCTION: Calculate total bill
+// Why: Automates the payment calculation process
 function calculateTotal() {
     let total = 0;
-    for (let order of orders) {
-        total += order.subtotal;
+    
+    // Loop through all orders and sum up subtotals
+    // Why for loop: Need to accumulate all order amounts
+    for (let i = 0; i < customerOrders.length; i++) {
+        total += customerOrders[i].subtotal;
     }
+    
     return total;
 }
 
-// Function to print receipt
-function printReceipt() {
-    console.log("\n--- Receipt ---");
-    for (let order of orders) {
-        console.log(`${order.quantity} x ${order.item} = ${order.subtotal} UGX`);
-    }
-    console.log("TOTAL: " + calculateTotal() + " UGX");
-    console.log("Thank you for dining with us!");
-}
-
-// Function to get valid user input
-function getUserInput(prompt) {
-    const readline = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    return new Promise(resolve => readline.question(prompt, ans => {
-        readline.close();
-        resolve(ans);
-    }));
-}
-
-// --------------------
-// MAIN PROGRAM LOGIC
-// --------------------
-
-async function main() {
-    console.log("Welcome to UCU Restaurant!");
+// FUNCTION: Display current order
+// Why: Allows customers to review their order before payment
+function displayOrder() {
+    console.log("\n" + "=".repeat(50));
+    console.log("YOUR ORDER SUMMARY");
+    console.log("=".repeat(50));
     
-    while (true) {
-        displayMainMenu();
-        
-        let mainChoice = await getUserInput("Please select a menu (1-4): ");
-        
-        if (mainChoice === "4") {
-            if (orders.length > 0) {
-                printReceipt();
-            }
-            console.log("Thank you for visiting UCU Restaurant!");
-            break;
-        }
-        
-        let menuType;
-        switch (mainChoice) {
-            case "1": menuType = "breakfast"; break;
-            case "2": menuType = "lunch"; break;
-            case "3": menuType = "dinner"; break;
-            default:
-                console.log("Invalid choice! Please select a number between 1 and 4.");
-                continue;
-        }
-        
-        while (true) {
-            displayMenu(menuType);
-            let itemChoice = await getUserInput("Select an item (1-5) or 0 to go back to main menu: ");
-            
-            if (itemChoice === "0") {
-                break;
-            }
-            
-            if (!menu[menuType][itemChoice]) {
-                console.log("Invalid item choice! Please try again.");
-                continue;
-            }
-            
-            let quantity = await getUserInput("Enter quantity: ");
-            quantity = parseInt(quantity);
-            
-            if (isNaN(quantity) || quantity <= 0) {
-                console.log("Invalid quantity! Please enter a positive number.");
-                continue;
-            }
-            
-            addOrder(menuType, itemChoice, quantity);
-            
-            let continueOrdering = await getUserInput("Would you like to order more items? (y/n): ");
-            if (continueOrdering.toLowerCase() !== 'y') {
-                break;
-            }
-        }
+    // Condition: Check if order is empty
+    // Why if/else: Handle empty order scenario
+    if (customerOrders.length === 0) {
+        console.log("Your order is empty.");
+        console.log("=".repeat(50));
+        return;
     }
+    
+    // Loop through and display each order item
+    // Why for loop: Display all items in the order
+    for (let i = 0; i < customerOrders.length; i++) {
+        const item = customerOrders[i];
+        console.log(`${i + 1}. ${item.name} x${item.quantity} - UGX ${item.subtotal.toLocaleString()}`);
+    }
+    
+    const total = calculateTotal();
+    console.log("=".repeat(50));
+    console.log(`TOTAL: UGX ${total.toLocaleString()}`);
+    console.log("=".repeat(50));
 }
 
-main()[
-    {choice: 2, quantity: 1},  // valid → 1 Chicken & Chips
-    {choice: 0, quantity: 0}   // finish ordering
-];
 
-// Process customer choices
-for (let i = 0; i < customerChoices.length; i++) {
-    let currentOrder = customerChoices[i];
 
-    if (currentOrder.choice === 0) {
-        break; // stop if customer finishes ordering
-    }
+// ==================== DEMONSTRATION ====================
+// This section demonstrates how the system works
 
-    // Retry until a valid choice is made
-    let success = addOrder(currentOrder.choice, currentOrder.quantity);
-    while (!success) {
-        // move to next valid choice (simulate retry by advancing index)
-        i++;
-        currentOrder = customerChoices[i];
-        success = addOrder(currentOrder.choice, currentOrder.quantity);
-    }
-}
+console.log("\n*** RESTAURANT ORDER SYSTEM DEMO ***\n");
 
-// Print receipt
-printReceipt();
+// Step 1: Display all available menus
+displayAllMenus();
+
+// Step 2: Customer places order
+console.log("\n--- Customer is placing an order ---");
+addToOrder(2, 2);  // 2x Omelette and Toast (Breakfast)
+addToOrder(6, 1);  // 1x Grilled Fish and Rice (Lunch)
+addToOrder(10, 2); // 2x Pasta Carbonara (Dinner)
+
+// Step 3: Display order summary
+displayOrder();
+
+// Step 4: Process payment
+console.log("\n--- Customer is making payment ---");
+const total = calculateTotal();
+processPayment(80000); // Customer pays 80,000 UGX
+
+console.log("\nThank you for dining with us! 🍽️\n");
 
 console.log("The End");
