@@ -1,8 +1,9 @@
 // Name: Wagonda Francis Precious
 // Access Number: B33245
-// Registration Number: M25B13/034
+// Registration Number: M25B13/038
 
 // PROBLEM STATEMENT:
+// Restaurant Menu system
 // Many restaurants still use manual methods for taking customer orders and calculating totals.
 // This leads to errors, slow service, and difficulty tracking orders.
 // This program automates the food ordering process and total calculation.
@@ -26,21 +27,21 @@ const menu = {
         { id: 10, name: "Pizza medium size", price: 20000 },
         { id: 11, name: "Roasted Chicken with Vegetables", price: 28000 },
         { id: 12, name: "Noodles", price: 45000 }
-    ]
+ ]
 };
 
 // Customer order storage
 let customerOrders = [];
 
 // FUNCTION: Display menu by meal time
-// Why: Makes it easy for customers to see available meals for each time of day
+//  its easy for customers to see available meals for each time of day
 function displayMenu(mealTime) {
     console.log(`\n${mealTime.toUpperCase()} MENU`);
     console.log("=".repeat(50));
 
 
 // Loop through menu items for the specified meal time
-// Why for loop: We need to display all items in the menu category
+// to display all items in the menu category
 for (let i = 0; i < menu[mealTime].length; i++) {
     const item = menu[mealTime][i];
     console.log(`${item.id}. ${item.name} - UGX ${item.price.toLocaleString()}`);
@@ -51,7 +52,7 @@ console.log("=".repeat(50));
 }
 
 // FUNCTION: Find menu item by ID
-// Why: Allows easy lookup of items when customer places an order
+//  Allows easy lookup of items when customer places an order
 function findMenuItem(itemId) {
     // Search through all meal times to find the item
     for (let mealTime in menu) {
@@ -102,16 +103,13 @@ if (menuItem === null) {
 // FUNCTION: Calculate total bill
 // Why: Automates the total calculation to avoid manual errors
 function calculateTotal() {
-    let subtotal = 0;
+    let total = 0;
     let i = 0;
     while (i < customerOrders.length) {
-        subtotal += customerOrders[i].subtotal;
+        total += customerOrders[i].subtotal;
         i++;
     }
-
-    const VAT = subtotal * 0.18; // 18% VAT
-    const total = subtotal + VAT;
-    return { subtotal, VAT, total };
+    return total;
 }
 
 // FUNCTION: Clear order
@@ -136,10 +134,8 @@ function displayOrder() {
             console.log(`${i + 1}. ${item.name} x${item.quantity} - UGX ${item.subtotal.toLocaleString()}`);
         }
         
-        const { subtotal, VAT, total } = calculateTotal();
+        const total = calculateTotal();
         console.log("=".repeat(50));
-        console.log(`Subtotal: UGX ${subtotal.toLocaleString()}`);
-        console.log(`VAT (18%): UGX ${VAT.toLocaleString()}`);
         console.log(`TOTAL: UGX ${total.toLocaleString()}`);
     }
     console.log("=".repeat(50));
