@@ -162,6 +162,6 @@ addToOrder(11, 1); // 1x Roasted Chicken with Vegetables
 // Display final order and total
 displayOrder();
 
-console.log("\nThank you for your order!");
+console.log("\nThank you for your order");
 
-console.log("The End");
+console.log("Come back again");
