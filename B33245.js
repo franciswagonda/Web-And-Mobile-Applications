@@ -113,14 +113,14 @@ function calculateTotal() {
 }
 
 // FUNCTION: Clear order
-// Why: Allows resetting the order in case the customer changes their mind
+// Allows resetting the order in case the customer changes their mind
 function clearOrder() {
     customerOrders = [];
     console.log("\nOrder cleared successfully!");
 }
 
 // FUNCTION: Display order summary
-// Why: Shows customers what they ordered and the total amount
+//  Shows customers what they ordered and the total amount
 function displayOrder() {
     console.log("\n" + "=".repeat(50));
     console.log("ORDER SUMMARY");
@@ -140,8 +140,7 @@ function displayOrder() {
     }
     console.log("=".repeat(50));
 }
-
-// ==================== DEMONSTRATION ====================
+//below is a sample output of the system at work
 
 console.log("*** WAGONDA'S RESTAURANT ORDER SYSTEM ***\n");
 
