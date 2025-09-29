@@ -32,37 +32,62 @@ The following programming constructs were used:
 
 //  created a database menu with items and prices in UGX)
 const menu = {
-    1: { name: "Rolex", price: 5000 },
-    2: { name: "Chicken & Chips", price: 15000 },
-    3: { name: "Pizza", price: 30000 },
-    4: { name: "Juice", price: 4000 },
-    5: { name: "Water", price: 2000 }
+    breakfast: {
+        1: { name: "Rolex", price: 5000 },
+        2: { name: "Pancakes", price: 8000 },
+        3: { name: "English Breakfast", price: 15000 },
+        4: { name: "Fruit Salad", price: 7000 },
+        5: { name: "Coffee", price: 3000 }
+    },
+    lunch: {
+        1: { name: "Chicken & Chips", price: 15000 },
+        2: { name: "Fish Fillet", price: 18000 },
+        3: { name: "Vegetable Rice", price: 12000 },
+        4: { name: "Beef Burger", price: 16000 },
+        5: { name: "Caesar Salad", price: 10000 }
+    },
+    dinner: {
+        1: { name: "Grilled Tilapia", price: 25000 },
+        2: { name: "Pizza", price: 30000 },
+        3: { name: "Steak & Chips", price: 28000 },
+        4: { name: "Pasta Alfredo", price: 20000 },
+        5: { name: "Vegetable Curry", price: 18000 }
+    }
 };
 
 // created an empty array to hold orders these will be appended as the customer makes their choices
 let orders = [];
 
-// Function to display the menu
-function displayMenu() {
-    console.log("\n--- Restaurant Menu ---");
-    for (let key in menu) {
-        console.log(`${key}. ${menu[key].name} - ${menu[key].price} UGX`);
+// Function to display the main menu categories
+function displayMainMenu() {
+    console.log("\n--- UCU Restaurant Main Menu ---");
+    console.log("1. Breakfast Menu");
+    console.log("2. Lunch Menu");
+    console.log("3. Dinner Menu");
+    console.log("4. Exit");
+}
+
+// Function to display specific menu items
+function displayMenu(menuType) {
+    console.log(`\n--- ${menuType.charAt(0).toUpperCase() + menuType.slice(1)} Menu ---`);
+    for (let key in menu[menuType]) {
+        console.log(`${key}. ${menu[menuType][key].name} - ${menu[menuType][key].price} UGX`);
     }
 }
 
 // Function to add an order (returns true if valid, false if invalid)
-function addOrder(choice, quantity) {
-    if (menu[choice]) {
+function addOrder(menuType, choice, quantity) {
+    if (menu[menuType][choice]) {
         orders.push({
-            item: menu[choice].name,
-            price: menu[choice].price,
+            item: menu[menuType][choice].name,
+            price: menu[menuType][choice].price,
             quantity: quantity,
-            subtotal: menu[choice].price * quantity
+            subtotal: menu[menuType][choice].price * quantity
         });
-        console.log(`${quantity} x ${menu[choice].name} .`);
+        console.log(`Added: ${quantity} x ${menu[menuType][choice].name}`);
         return true;
     } else {
-        console.log(" Invalid choice. Please select again.");
+        console.log("Invalid choice. Please select again.");
         return false;
     }
 }
@@ -86,18 +111,80 @@ function printReceipt() {
     console.log("Thank you for dining with us!");
 }
 
+// Function to get valid user input
+function getUserInput(prompt) {
+    const readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    return new Promise(resolve => readline.question(prompt, ans => {
+        readline.close();
+        resolve(ans);
+    }));
+}
+
 // --------------------
 // MAIN PROGRAM LOGIC
 // --------------------
 
-console.log("Welcome to UCU Restaurant!");
-displayMenu();
+async function main() {
+    console.log("Welcome to UCU Restaurant!");
+    
+    while (true) {
+        displayMainMenu();
+        
+        let mainChoice = await getUserInput("Please select a menu (1-4): ");
+        
+        if (mainChoice === "4") {
+            if (orders.length > 0) {
+                printReceipt();
+            }
+            console.log("Thank you for visiting UCU Restaurant!");
+            break;
+        }
+        
+        let menuType;
+        switch (mainChoice) {
+            case "1": menuType = "breakfast"; break;
+            case "2": menuType = "lunch"; break;
+            case "3": menuType = "dinner"; break;
+            default:
+                console.log("Invalid choice! Please select a number between 1 and 4.");
+                continue;
+        }
+        
+        while (true) {
+            displayMenu(menuType);
+            let itemChoice = await getUserInput("Select an item (1-5) or 0 to go back to main menu: ");
+            
+            if (itemChoice === "0") {
+                break;
+            }
+            
+            if (!menu[menuType][itemChoice]) {
+                console.log("Invalid item choice! Please try again.");
+                continue;
+            }
+            
+            let quantity = await getUserInput("Enter quantity: ");
+            quantity = parseInt(quantity);
+            
+            if (isNaN(quantity) || quantity <= 0) {
+                console.log("Invalid quantity! Please enter a positive number.");
+                continue;
+            }
+            
+            addOrder(menuType, itemChoice, quantity);
+            
+            let continueOrdering = await getUserInput("Would you like to order more items? (y/n): ");
+            if (continueOrdering.toLowerCase() !== 'y') {
+                break;
+            }
+        }
+    }
+}
 
-// Simulated customer choices (including an invalid one to test retry)
-let customerChoices = [
-    {choice: 1, quantity: 2},  // valid → 2 Rolex
-    {choice: 8, quantity: 1},  // invalid → should retry
-    {choice: 3, quantity: 1},  // valid → 1 Pizza
+main()[
     {choice: 2, quantity: 1},  // valid → 1 Chicken & Chips
     {choice: 0, quantity: 0}   // finish ordering
 ];
