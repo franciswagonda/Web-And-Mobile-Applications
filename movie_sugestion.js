@@ -1,6 +1,4 @@
-//Mugisha Amos
-//B33235
-//M25B13/028
+
 
 // Movie Recommendation System 
 // This version shows how the system works without user prompts
