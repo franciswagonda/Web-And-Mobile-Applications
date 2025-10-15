@@ -1,0 +1,15 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #141212ff;
+    color: #c5c0c0;
+}
+
+footer {
+    margin-top: 3rem;
+}
+
+.card {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.2s;}
