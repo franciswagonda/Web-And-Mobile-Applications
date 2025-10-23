@@ -4,12 +4,20 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
+  
   return (
-    <div className = "App" >
+    <div>
       <h1>HELLO WORLD!</h1>
       <p>Welcome to my first React app</p>
+      
+      <p>Your total is {first_number * second_number}
+
     </div>
-  );
+    
 }
+
+
+
+
 export default App
  
