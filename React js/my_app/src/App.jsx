@@ -1,23 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import Title from '../src/components/title.jsx'
 
 function App() {
-  
+  const site_data = [
+    {
+      title: "BSIT",
+      DESCRIPTION: "This is a very nice website"
+    },
+    {
+      title: "BDS",
+      DESCRIPTION: "This is a very nice website"
+    },
+    {
+      title: "Engineering",
+      DESCRIPTION: "This is a very nice website"
+    }
+  ];
+
   return (
     <div>
-      <h1>HELLO WORLD!</h1>
-      <p>Welcome to my first React app</p>
-      
-      <p>Your total is {first_number * second_number}
+    {
+      site_data.map(() => {
+        return (
+        <Title data = {item} />
+      )
+      })
 
+    }
     </div>
-    
+  
+)
 }
 
+export default App        
 
-
-
-export default App
- 
